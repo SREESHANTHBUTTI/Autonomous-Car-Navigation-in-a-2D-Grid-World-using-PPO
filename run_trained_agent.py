@@ -19,7 +19,7 @@ model.load_state_dict(torch.load("ppo_trained_model.pth"))
 model.eval()
 
 # ------------------------------
-# Reset Environment (Gymnasium API)
+# Reset Environment
 # ------------------------------
 state, info = env.reset()
 state = np.array(state, dtype=np.float32)
@@ -32,19 +32,16 @@ print("\n Starting Trained Agent Run...\n")
 env.render()
 
 # ------------------------------
-# Run Trained Agent
+# Run the trained PPO agent
 # ------------------------------
 while not done and step < 50:
 
-    # Convert to tensor
-    state_tensor = torch.tensor(state, dtype=torch.float32).unsqueeze(0)
+    state_tensor = torch.tensor(state, dtype=torch.float32)
 
     with torch.no_grad():
-        dist, value = model(state_tensor)  # dist is a torch.distributions.Categorical
-        action_probs = dist.probs          # extract probabilities
-        action = torch.argmax(action_probs, dim=1).item()
+        dist, value = model(state_tensor)
+        action = dist.sample().item()          # <<< IMPORTANT FIX
 
-    # Gymnasium step
     next_state, reward, terminated, truncated, info = env.step(action)
     done = terminated or truncated
 
