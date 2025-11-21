@@ -211,5 +211,5 @@ def train_ppo(num_episodes=2000, grid_size=5):
     return ppo.policy
 
 
-if _name_ == "_main_":
+if __name__ == "_main_":
     train_ppo(num_episodes=2000, grid_size=5)
